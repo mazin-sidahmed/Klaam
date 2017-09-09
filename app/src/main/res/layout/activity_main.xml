@@ -6,20 +6,13 @@
     android:layout_height="match_parent"
     tools:context="com.example.mazin.klaam.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:id="@+id/activity_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.stacktips.speechtotext.MainActivity">
+        android:layout_width="138dp"
+        android:layout_height="495dp"
+        tools:context="com.stacktips.speechtotext.MainActivity"
+        tools:layout_editor_absoluteX="136dp"
+        tools:layout_editor_absoluteY="16dp">
 
         <ScrollView
             android:layout_width="wrap_content"
@@ -43,12 +36,14 @@
             android:background="#f5f5f5"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="20dp"
+            android:weightSum="1">
 
             <ImageButton
                 android:id="@+id/btnSpeak"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.63"
                 android:background="@null"
                 android:padding="16dp"
                 android:scaleType="fitCenter"
