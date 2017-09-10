@@ -1,4 +1,4 @@
-package com.example.mazin.klaam;
+package com.uofk.school.klaam;
 
 import org.junit.Test;
 
