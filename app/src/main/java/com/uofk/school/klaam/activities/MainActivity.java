@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.uofk.school.klaam.R;
 import com.uofk.school.klaam.services.ApiService;
 import com.uofk.school.klaam.services.SignLanguageApi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_CODE_SPEECH_INPUT = 100;
     private TextView mVoiceInputTv;
     private SignLanguageApi signLanguageApi;
+    private List<String> speechText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +36,29 @@ public class MainActivity extends AppCompatActivity {
 
         ApiService apiService = new ApiService();
         signLanguageApi = apiService.getSignLanguageApi();
+        speechText = new ArrayList<>();
 
         setContentView(R.layout.activity_main);
         mVoiceInputTv = (TextView) findViewById(R.id.voiceInput);
-        ImageButton micSpeakBtn = (ImageButton) findViewById(R.id.btnSpeak);
-        micSpeakBtn.setOnClickListener(new View.OnClickListener() {
 
+        ImageButton micSpeakBtn = (ImageButton) findViewById(R.id.btnSpeak);
+        micSpeakBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startVoiceInput();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (!speechText.isEmpty()){
+                            getInstructions(android.text.TextUtils.join(" ", speechText));
+                        }
+                        return true;
+                }
+
                 startVoiceInput();
+                return true;
             }
         });
     }
@@ -54,16 +71,17 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-
-            Toast toast = Toast.makeText(getApplicationContext(),
+            Toast.makeText(
+                    getApplicationContext(),
                     "Recording...",
-                    Toast.LENGTH_SHORT);
-            toast.show();
+                    Toast.LENGTH_SHORT)
+                    .show();
         } catch (ActivityNotFoundException a) {
-            Toast toast = Toast.makeText(getApplicationContext(),
+            Toast.makeText(
+                    getApplicationContext(),
                     "Oops! Your device doesn't support Speech to Text",
-                    Toast.LENGTH_SHORT);
-            toast.show();
+                    Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -71,26 +89,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && data != null) {
-                    String results = RecognizerIntent.EXTRA_RESULTS;
-                    signLanguageApi.search(results).enqueue(new Callback<List<String>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<List<String>> call, @NonNull Response<List<String>> response) {
-                            List<String> instructions = response.body();
-                            mVoiceInputTv.setText(android.text.TextUtils.join(",", instructions));
-                        }
+        if (requestCode == REQ_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK && data != null) {
+                speechText.addAll(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
+            }
+        }
+    }
 
-                        @Override
-                        public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+    private void getInstructions(String results) {
+        Toast.makeText(
+                getApplicationContext(),
+                "Getting instructions...",
+                Toast.LENGTH_SHORT)
+                .show();
 
-                        }
-                    });
-                }
-                break;
+        signLanguageApi.search(results).enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call, @NonNull Response<List<String>> response) {
+                List<String> instructions = response.body();
+                mVoiceInputTv.setText(android.text.TextUtils.join(",", instructions));
             }
 
-        }
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 }
