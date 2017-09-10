@@ -1,5 +1,6 @@
 package com.uofk.school.klaam.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.uofk.school.klaam.R;
 import com.uofk.school.klaam.services.ApiService;
@@ -49,7 +51,20 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA");
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "العربية");
-        startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Recording...",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        } catch (ActivityNotFoundException a) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Oops! Your device doesn't support Speech to Text",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     @Override
@@ -58,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && data != null ) {
+                if (resultCode == RESULT_OK && data != null) {
                     String results = RecognizerIntent.EXTRA_RESULTS;
                     signLanguageApi.search(results).enqueue(new Callback<List<String>>() {
                         @Override
