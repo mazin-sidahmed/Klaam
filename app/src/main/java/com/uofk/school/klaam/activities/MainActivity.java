@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -27,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQ_CODE_SPEECH_INPUT = 100;
     private TextView mVoiceInputTv;
+    private ImageButton mSpeakBtn;
     private SignLanguageApi signLanguageApi;
     private List<String> speechText;
 
@@ -41,24 +41,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mVoiceInputTv = (TextView) findViewById(R.id.voiceInput);
 
-        ImageButton micSpeakBtn = (ImageButton) findViewById(R.id.btnSpeak);
-        micSpeakBtn.setOnTouchListener(new View.OnTouchListener() {
+        mSpeakBtn = (ImageButton) findViewById(R.id.btnSpeak);
+        mSpeakBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        startVoiceInput();
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        if (!speechText.isEmpty()){
-                            getInstructions(android.text.TextUtils.join(" ", speechText));
-                        }
-                        return true;
-                }
-
-                startVoiceInput();
-                return true;
+            public void onClick(View v) {startVoiceInput();
             }
         });
     }
@@ -67,35 +54,28 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA");
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "العربية");
-
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "تحدث بالقرب من المايك ");
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Recording...",
-                    Toast.LENGTH_SHORT)
-                    .show();
         } catch (ActivityNotFoundException a) {
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Oops! Your device doesn't support Speech to Text",
-                    Toast.LENGTH_SHORT)
-                    .show();
+
         }
     }
-
     @Override
-    protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQ_CODE_SPEECH_INPUT) {
-            if (resultCode == RESULT_OK && data != null) {
-                speechText.addAll(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mVoiceInputTv.setText(result.get(0));
+                }
+                break;
             }
+
         }
     }
-
     private void getInstructions(String results) {
         Toast.makeText(
                 getApplicationContext(),

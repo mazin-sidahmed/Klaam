@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.uofk.school.klaam.activities.MainActivity">
 
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnSpeakContainer"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="20dp"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/voiceInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="25dp"
+            android:textColor="#0000FF"/>
+    </ScrollView>
+
     <LinearLayout
         android:id="@+id/btnSpeakContainer"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#f5f5f5"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:weightSum="1"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="394dp">
+        android:padding="20dp">
 
         <ImageButton
             android:id="@+id/btnSpeak"
-            android:layout_width="86dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.56"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@null"
-            android:padding="8dp"
+            android:padding="16dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_keyboard_voice_black_24dp" />
+            android:src="@drawable/ic_mic_black_24dp" />
 
         <TextView
             android:id="@+id/textView"
@@ -35,31 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/btnSpeak"
             android:layout_margin="10dp"
-            android:text="" />
+            android:textSize="25dp"
+            android:text="اضغط علي المايك" />
     </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/activity_main"
-        android:layout_width="138dp"
-        android:layout_height="495dp"
-        tools:context="com.stacktips.speechtotext.MainActivity"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="16dp">
-
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/btnSpeakContainer"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20dp"
-            android:padding="20dp">
-
-            <TextView
-                android:id="@+id/voiceInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
-
-    </RelativeLayout>
-
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
